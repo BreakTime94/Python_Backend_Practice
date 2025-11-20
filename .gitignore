@@ -1,0 +1,91 @@
+# ============================
+# Python 기본
+# ============================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# ============================
+# 패키지 / 빌드 / 배포 파일
+# ============================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ============================
+# 가상환경 (venv)
+# ============================
+venv/
+.env/
+env/
+.venv/
+
+# ============================
+# 테스트 / 커버리지
+# ============================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# ============================
+# Jupyter Notebook
+# ============================
+.ipynb_checkpoints
+
+# ============================
+# PyInstaller
+# ============================
+*.manifest
+*.spec
+
+# ============================
+# 로그/환경/보안 정보
+# ============================
+*.log
+.env.*
+.env.local
+.env.production
+.env.development
+.secret
+secrets.json
+
+# ============================
+# 편집기 / IDE 설정
+# ============================
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# ============================
+# OS 기본 파일
+# ============================
+.DS_Store
+Thumbs.db
