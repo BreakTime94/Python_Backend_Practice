@@ -1,4 +1,4 @@
-import strawberry
+import strawberry, redis
 from typing import Optional, List
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -9,7 +9,13 @@ from db.models import EmployeeModel
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 
+r= redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 
+EMPLOYEE_ID_COUNTER_KEY = "employee:id:counter"
+EMPLOYEE_ALL_SET_KEY = "employee:all-set"
+
+def employee_redis_key(emp_id: int) -> str:
+  return f"employee:id:{emp_id}"
 
 @strawberry.type
 class Employee:
@@ -29,23 +35,33 @@ class EmployeeInput:
   pay: int
 
 # ORM 객체 -> GRAPHQL 타입 변환 도우미
-def orm_to_grpahql(emp: EmployeeModel) -> Employee:
+def redis_to_grpahql(emp_id: int, data: dict) -> Employee:
   return Employee(
-    id = emp.id,
-    name = emp.name,
-    age= emp.age,
-    job= emp.job,
-    language= emp.language,
-    pay= emp.pay
+    id = emp_id,
+    name = data.name,
+    age= data.age,
+    job= data.job,
+    language= data.language,
+    pay= data.pay
   )
 
 @strawberry.type
 class Query:
   @strawberry.field
   def employees(self) -> List[Employee]:
-    with SessionLocal() as db:
-      rows = db.query(EmployeeModel).all()
-      return [orm_to_grpahql(row) for row in rows]
+    ids = r.smembers(EMPLOYEE_ALL_SET_KEY)
+    result: List[Employee] = []
+    for id_str in ids:
+      key = employee_redis_key(int(id_str))
+      data = r.hgetall(key)
+      if data:
+        result.append(redis_to_grpahql(int(id_str), data))
+
+    result.sort(key=lambda emp: emp.id)
+    return result
+    # with SessionLocal() as db:
+    #   rows = db.query(EmployeeModel).all()
+    #   return [orm_to_grpahql(row) for row in rows]
     # return EMPLOYEES
 
   # @strawberry.field
